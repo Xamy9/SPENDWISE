@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Expense Tracker{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center align-items-center min-vh-75">
+
+        <!-- Left Side -->
+
+        <div class="col-lg-5 d-none d-lg-block">
+
+            <div class="pe-5">
+
+                <span class="badge bg-primary mb-3 px-3 py-2">
+                    Welcome Back
+                </span>
+
+                <h1 class="display-5 fw-bold mb-4">
+
+                    Manage your finances with confidence.
+
+                </h1>
+
+                <p class="lead text-muted mb-4">
+
+                    Log in to access your expense dashboard, monitor your spending,
+                    and stay in control of your financial goals.
+
+                </p>
+
+                <div class="mb-4">
+
+                    <div class="d-flex mb-3">
+
+                        <i class="fas fa-check-circle text-success mt-1 me-3"></i>
+
+                        <div>
+
+                            <strong>Track Expenses</strong>
+
+                            <p class="text-muted mb-0">
+                                Record every transaction effortlessly.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex mb-3">
+
+                        <i class="fas fa-chart-pie text-primary mt-1 me-3"></i>
+
+                        <div>
+
+                            <strong>Analyze Spending</strong>
+
+                            <p class="text-muted mb-0">
+                                Visualize your financial habits with charts.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex">
+
+                        <i class="fas fa-shield-alt text-warning mt-1 me-3"></i>
+
+                        <div>
+
+                            <strong>Secure Access</strong>
+
+                            <p class="text-muted mb-0">
+                                Your financial records stay private and protected.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Login Card -->
+
+        <div class="col-md-8 col-lg-5">
+
+            <div class="card shadow-lg border-0">
+
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+
+                        <div class="mb-3">
+
+                            <i class="fas fa-wallet fa-3x text-primary"></i>
+
+                        </div>
+
+                        <h2 class="fw-bold">
+
+                            Welcome Back
+
+                        </h2>
+
+                        <p class="text-muted">
+
+                            Sign in to your account
+
+                        </p>
+
+                    </div>
+
+                    <form method="post" novalidate>
+
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+
+                            <div class="alert alert-danger">
+
+                                {{ form.non_field_errors }}
+
+                            </div>
+
+                        {% endif %}
+
+                        <!-- Username -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Username
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="fas fa-user"></i>
+
+                                </span>
+
+                                {{ form.username }}
+
+                            </div>
+
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.username.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Password -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Password
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    <i class="fas fa-lock"></i>
+
+                                </span>
+
+                                {{ form.password }}
+
+                            </div>
+
+                            {% if form.password.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.password.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+                        <div class="text-end mb-3">
+                         <a href="{% url 'password_reset' %}">
+                               Forgot Password?
+                         </a>
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary w-100 py-2">
+
+                            <i class="fas fa-right-to-bracket me-2"></i>
+
+                            Login
+
+                        </button>
+
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+
+                        <p class="mb-2">
+
+                            Don't have an account?
+
+                        </p>
+
+                        <a href="{% url 'register' %}"
+                           class="btn btn-outline-primary">
+
+                            Create Account
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

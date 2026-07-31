@@ -1,0 +1,1006 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Income Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+
+                <i class="fas fa-money-bill-trend-up text-success me-2"></i>
+
+                Income Dashboard
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Manage, monitor and organize all your income records.
+
+            </p>
+
+        </div>
+
+        <div class="mt-3 mt-lg-0">
+
+            <a href="{% url 'income_add' %}"
+
+               class="btn btn-success w-100 w-lg-auto">
+
+                <i class="fas fa-circle-plus me-2"></i>
+
+                Add Income
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ================= SEARCH & FILTER ================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- Search -->
+
+                    <div class="col-12 col-lg-4">
+
+                        <label class="form-label fw-semibold">
+
+                            Search
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ search_query }}"
+                            class="form-control"
+                            placeholder="Search description or source...">
+
+                    </div>
+
+                    <!-- Income Source -->
+
+                    <div class="col-6 col-md-3 col-lg-2">
+
+                        <label class="form-label fw-semibold">
+
+                            Source
+
+                        </label>
+
+                        <select
+                            name="source"
+                            class="form-select">
+
+                            <option value="">
+
+                                All Sources
+
+                            </option>
+
+                            {% for value,label in sources %}
+
+                                <option
+                                    value="{{ value }}"
+                                    {% if selected_source == value %}selected{% endif %}>
+
+                                    {{ label }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- Currency -->
+
+                    <div class="col-6 col-md-3 col-lg-2">
+
+                        <label class="form-label fw-semibold">
+
+                            Currency
+
+                        </label>
+
+                        <select
+                            name="currency"
+                            class="form-select">
+
+                            <option value="">
+
+                                All
+
+                            </option>
+
+                            {% for value,label in currencies %}
+
+                                <option
+                                    value="{{ value }}"
+                                    {% if selected_currency == value %}selected{% endif %}>
+
+                                    {{ label }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- Sort -->
+
+                    <div class="col-6 col-md-3 col-lg-2">
+
+                        <label class="form-label fw-semibold">
+
+                            Sort
+
+                        </label>
+
+                        <select
+                            name="sort"
+                            class="form-select">
+
+                            <option value="newest"
+                                {% if selected_sort == "newest" %}selected{% endif %}>
+
+                                Newest
+
+                            </option>
+
+                            <option value="oldest"
+                                {% if selected_sort == "oldest" %}selected{% endif %}>
+
+                                Oldest
+
+                            </option>
+
+                            <option value="highest"
+                                {% if selected_sort == "highest" %}selected{% endif %}>
+
+                                Highest
+
+                            </option>
+
+                            <option value="lowest"
+                                {% if selected_sort == "lowest" %}selected{% endif %}>
+
+                                Lowest
+
+                            </option>
+
+                            <option value="source"
+                                {% if selected_sort == "source" %}selected{% endif %}>
+
+                                Source
+
+                            </option>
+
+                            <option value="currency"
+                                {% if selected_sort == "currency" %}selected{% endif %}>
+
+                                Currency
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Search Button -->
+
+                    <div class="col-6 col-md-3 col-lg-1">
+
+                        <button
+                            class="btn btn-success w-100"
+                            type="submit">
+
+                            <i class="fas fa-search"></i>
+
+                        </button>
+
+                    </div>
+
+                    <!-- Reset -->
+
+                    <div class="col-6 col-md-3 col-lg-1">
+
+                        <a
+                            href="{% url 'income_list' %}"
+                            class="btn btn-outline-secondary w-100">
+
+                            <i class="fas fa-rotate"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- ================= DASHBOARD CARDS ================= -->
+
+    <div class="row g-3 mb-4">
+
+        <!-- Total Records -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+
+                        Total Records
+
+                    </small>
+
+                    <h3 class="fw-bold mt-2">
+
+                        {{ page_obj.paginator.count }}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Highest Income -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+
+                        Highest Income
+
+                    </small>
+
+                    <h4 class="fw-bold text-success mt-2">
+
+                        {{ highest_income|floatformat:2|intcomma }}
+
+                    </h4>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Income Totals -->
+
+        <div class="col-12 col-xl-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted d-block mb-3">
+
+                        Total Income By Currency
+
+                    </small>
+
+                    <div class="row g-2">
+
+                        {% for item in currency_totals %}
+
+                        <div class="col-6 col-md-4">
+
+                            <div class="border rounded p-3 text-center">
+
+                                <small class="text-muted">
+
+                                    {{ item.currency }}
+
+                                </small>
+
+                                <div class="fw-bold text-success">
+
+                                    {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {% empty %}
+
+                        <div class="col-12 text-center text-muted">
+
+                            No income recorded.
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= TODAY & MONTH SUMMARY ================= -->
+
+    <div class="row g-3 mb-4">
+                <!-- ================= TODAY'S INCOME ================= -->
+
+        <div class="col-12 col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-calendar-day text-success me-2"></i>
+
+                        Today's Income
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if today_summary %}
+
+                        <div class="row g-2">
+
+                            {% for item in today_summary %}
+
+                            <div class="col-6">
+
+                                <div class="border rounded p-3 text-center">
+
+                                    <small class="text-muted">
+
+                                        {{ item.currency }}
+
+                                    </small>
+
+                                    <h6 class="fw-bold text-success mt-2 mb-0">
+
+                                        {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                    </h6>
+
+                                </div>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="text-center text-muted mb-0">
+
+                            No income recorded today.
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= MONTH SUMMARY ================= -->
+
+        <div class="col-12 col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+
+                        This Month
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if month_summary %}
+
+                        <div class="row g-2">
+
+                            {% for item in month_summary %}
+
+                            <div class="col-6">
+
+                                <div class="border rounded p-3 text-center">
+
+                                    <small class="text-muted">
+
+                                        {{ item.currency }}
+
+                                    </small>
+
+                                    <h6 class="fw-bold text-primary mt-2 mb-0">
+
+                                        {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                    </h6>
+
+                                </div>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="text-center text-muted mb-0">
+
+                            No income recorded this month.
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= INCOME HISTORY ================= -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap">
+
+            <h5 class="mb-0">
+
+                <i class="fas fa-list me-2 text-success"></i>
+
+                Income History
+
+            </h5>
+
+            <span class="badge bg-success">
+
+                {{ page_obj.paginator.count }} Records
+
+            </span>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <!-- Desktop Table -->
+
+            <div class="table-responsive d-none d-md-block">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>Source</th>
+
+                            <th>Description</th>
+
+                            <th>Receipt</th>
+
+                            <th>Currency</th>
+
+                            <th>Amount</th>
+
+                            <th>Date</th>
+
+                            <th class="text-center">Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for income in incomes %}
+
+                        <tr>
+
+                            <td>
+
+                                <span class="badge bg-success">
+
+                                    {{ income.get_source_display }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {{ income.description }}
+
+                            </td>
+
+                            <td>
+
+                                {% if income.receipt %}
+
+                                    <a href="{{ income.receipt.url }}"
+                                       target="_blank">
+
+                                        <img src="{{ income.receipt.url }}"
+                                             width="55"
+                                             height="55"
+                                             class="rounded border object-fit-cover">
+
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="text-muted">
+
+                                        —
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-light text-dark border">
+
+                                    {{ income.currency }}
+
+                                </span>
+
+                            </td>
+
+                            <td class="fw-bold text-success">
+
+                                {{ income.amount|floatformat:2|intcomma }}
+
+                            </td>
+
+                            <td>
+
+                                {{ income.date|date:"M d, Y" }}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <a href="{% url 'income_edit' income.pk %}"
+
+                                   class="btn btn-sm btn-outline-warning">
+
+                                    <i class="fas fa-pen"></i>
+
+                                </a>
+
+                                <a href="{% url 'income_delete' income.pk %}"
+
+                                   class="btn btn-sm btn-outline-danger">
+
+                                    <i class="fas fa-trash"></i>
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="7">
+
+                                <div class="text-center py-5">
+
+                                    <i class="fas fa-money-bill-wave fa-4x text-muted mb-3"></i>
+
+                                    <h4>No Income Found</h4>
+
+                                    <p class="text-muted">
+
+                                        Start by recording your first income.
+
+                                    </p>
+
+                                    <a href="{% url 'income_add' %}"
+
+                                       class="btn btn-success">
+
+                                        <i class="fas fa-plus me-2"></i>
+
+                                        Add Income
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- Mobile Cards -->
+
+            <div class="d-md-none p-3">
+
+                {% for income in incomes %}
+
+                <div class="card border-0 shadow-sm mb-3">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span class="badge bg-success">
+
+                                {{ income.get_source_display }}
+
+                            </span>
+
+                            <span class="badge bg-light text-dark border">
+
+                                {{ income.currency }}
+
+                            </span>
+
+                        </div>
+
+                        <h6 class="fw-bold">
+
+                            {{ income.description }}
+
+                        </h6>
+
+                        <div class="text-success fw-bold fs-5">
+
+                            {{ income.amount|floatformat:2|intcomma }}
+
+                        </div>
+
+                        <small class="text-muted">
+
+                            {{ income.date|date:"M d, Y" }}
+
+                        </small>
+                                                   {% if income.receipt %}
+
+                            <div class="mt-3">
+
+                                <a href="{{ income.receipt.url }}"
+                                   target="_blank">
+
+                                    <img src="{{ income.receipt.url }}"
+                                         class="img-fluid rounded border shadow-sm"
+                                         style="max-height:150px;">
+
+                                </a>
+
+                            </div>
+
+                        {% endif %}
+
+                        <div class="mt-3 d-flex justify-content-end gap-2">
+
+                            <a href="{% url 'income_edit' income.pk %}"
+                               class="btn btn-sm btn-outline-warning">
+
+                                <i class="fas fa-pen"></i>
+
+                            </a>
+
+                            <a href="{% url 'income_delete' income.pk %}"
+                               class="btn btn-sm btn-outline-danger">
+
+                                <i class="fas fa-trash"></i>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="text-center py-5">
+
+                    <i class="fas fa-money-bill-wave fa-4x text-muted mb-3"></i>
+
+                    <h4>No Income Found</h4>
+
+                    <p class="text-muted">
+
+                        Start recording your income today.
+
+                    </p>
+
+                    <a href="{% url 'income_add' %}"
+                       class="btn btn-success">
+
+                        <i class="fas fa-plus me-2"></i>
+
+                        Add Income
+
+                    </a>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= INCOME CHART ================= -->
+
+    <div class="row mt-4">
+
+        <div class="col-12">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-chart-pie text-success me-2"></i>
+
+                        Income by Source
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div style="height:320px;">
+
+                        <canvas id="incomeChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {{ source_data|json_script:"source-data" }}
+
+    <!-- ================= PAGINATION ================= -->
+
+    {% if page_obj.has_other_pages %}
+
+    <div class="d-flex justify-content-center mt-4">
+
+        <nav>
+
+            <ul class="pagination pagination-sm">
+
+                {% if page_obj.has_previous %}
+
+                <li class="page-item">
+
+                    <a class="page-link"
+                       href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&source={{ selected_source }}&currency={{ selected_currency }}&sort={{ selected_sort }}">
+
+                        Previous
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+
+                    {% if page_obj.number == num %}
+
+                        <li class="page-item active">
+
+                            <span class="page-link">
+
+                                {{ num }}
+
+                            </span>
+
+                        </li>
+
+                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+
+                        <li class="page-item">
+
+                            <a class="page-link"
+                               href="?page={{ num }}&search={{ search_query }}&source={{ selected_source }}&currency={{ selected_currency }}&sort={{ selected_sort }}">
+
+                                {{ num }}
+
+                            </a>
+
+                        </li>
+
+                    {% endif %}
+
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+
+                <li class="page-item">
+
+                    <a class="page-link"
+                       href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&source={{ selected_source }}&currency={{ selected_currency }}&sort={{ selected_sort }}">
+
+                        Next
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const dataElement = document.getElementById("source-data");
+
+    if(!dataElement) return;
+
+    const sourceData = JSON.parse(dataElement.textContent);
+
+    const labels = Object.keys(sourceData);
+
+    const values = Object.values(sourceData);
+
+    if(labels.length === 0){
+
+        document.getElementById("incomeChart").parentElement.innerHTML = `
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                <p>No income data available.</p>
+            </div>
+        `;
+
+        return;
+
+    }
+
+    new Chart(document.getElementById("incomeChart"),{
+
+        type:"doughnut",
+
+        data:{
+
+            labels:labels,
+
+            datasets:[{
+
+                data:values,
+
+                backgroundColor:[
+
+                    "#198754",
+                    "#0d6efd",
+                    "#ffc107",
+                    "#dc3545",
+                    "#20c997",
+                    "#6f42c1",
+                    "#fd7e14",
+                    "#6610f2",
+                    "#17a2b8",
+                    "#6c757d"
+
+                ],
+
+                borderWidth:2,
+
+                borderColor:"#fff"
+
+            }]
+
+        },
+
+        options:{
+
+            responsive:true,
+
+            maintainAspectRatio:false,
+
+            plugins:{
+
+                legend:{
+
+                    position:"bottom"
+
+                }
+
+            }
+
+        }
+
+    });
+
+});
+
+</script>
+
+{% endblock %} 

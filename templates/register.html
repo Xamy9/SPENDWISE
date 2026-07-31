@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block title %}Register | Expense Tracker{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center align-items-center min-vh-75">
+
+        <div class="col-md-10 col-lg-7 col-xl-6">
+
+            <div class="card shadow-lg border-0">
+
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+
+                        <i class="fas fa-wallet fa-3x text-primary mb-3"></i>
+
+                        <h2 class="fw-bold">
+                            Create Account
+                        </h2>
+
+                        <p class="text-muted">
+                            Start managing your expenses smarter.
+                        </p>
+
+                    </div>
+
+                    <form method="post" novalidate>
+
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Username -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Username
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+
+                                {{ form.username }}
+
+                            </div>
+
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.username.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Email -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Email Address
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+
+                                {{ form.email }}
+
+                            </div>
+
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.email.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Password -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Password
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+
+                                {{ form.password1 }}
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword1">
+
+                                    <i class="fas fa-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                            {% if form.password1.help_text %}
+                                <small class="text-muted">
+                                    {{ form.password1.help_text|safe }}
+                                </small>
+                            {% endif %}
+
+                            {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.password1.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Confirm Password -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Confirm Password
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+
+                                {{ form.password2 }}
+
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword2">
+
+                                    <i class="fas fa-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                            {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.password2.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <button class="btn btn-primary w-100 py-2"
+                                type="submit">
+
+                            <i class="fas fa-user-plus me-2"></i>
+
+                            Create Account
+
+                        </button>
+
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+
+                        <p class="mb-2">
+                            Already have an account?
+                        </p>
+
+                        <a href="{% url 'login' %}"
+                           class="btn btn-outline-primary">
+
+                            Login
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+function setupPasswordToggle(buttonId, fieldId) {
+
+    const button = document.getElementById(buttonId);
+
+    const password = document.getElementById(fieldId);
+
+    if (!button || !password) return;
+
+    button.addEventListener('click', function () {
+
+        const icon = this.querySelector('i');
+
+        if (password.type === 'password') {
+
+            password.type = 'text';
+
+            icon.classList.remove('fa-eye');
+
+            icon.classList.add('fa-eye-slash');
+
+        } else {
+
+            password.type = 'password';
+
+            icon.classList.remove('fa-eye-slash');
+
+            icon.classList.add('fa-eye');
+
+        }
+
+    });
+
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    setupPasswordToggle('togglePassword1', 'id_password1');
+
+    setupPasswordToggle('togglePassword2', 'id_password2');
+
+});
+
+</script>
+
+{% endblock %}

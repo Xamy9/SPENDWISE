@@ -1,0 +1,535 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}
+Budget Details | SpendWise
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- ========================================= -->
+    <!-- PAGE HEADER -->
+    <!-- ========================================= -->
+
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+
+                <i class="fas fa-piggy-bank text-primary me-2"></i>
+
+                Budget Details
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                View your monthly budget performance and spending progress.
+
+            </p>
+
+        </div>
+
+        <div class="mt-3 mt-lg-0">
+
+            <a href="{% url 'budget_list' %}" class="btn btn-outline-secondary me-2">
+
+                <i class="fas fa-arrow-left me-2"></i>
+
+                Back
+
+            </a>
+
+            <a href="{% url 'budget_edit' budget.pk %}" class="btn btn-primary">
+
+                <i class="fas fa-pen me-2"></i>
+
+                Edit Budget
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- BUDGET INFORMATION -->
+    <!-- ========================================= -->
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="fas fa-wallet text-primary me-2"></i>
+
+                        Budget Overview
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+
+                            <small class="text-muted d-block">
+
+                                Category
+
+                            </small>
+
+                            <h5 class="fw-bold">
+
+                                {{ budget.get_category_display }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <small class="text-muted d-block">
+
+                                Currency
+
+                            </small>
+
+                            <h5 class="fw-bold">
+
+                                {{ budget.currency }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <small class="text-muted d-block">
+
+                                Month
+
+                            </small>
+
+                            <h5 class="fw-bold">
+
+                                {{ budget.month_name }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <small class="text-muted d-block">
+
+                                Year
+
+                            </small>
+
+                            <h5 class="fw-bold">
+
+                                {{ budget.year }}
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Financial Summary -->
+
+                    <div class="row text-center g-4">
+
+                        <div class="col-md-4">
+
+                            <small class="text-muted d-block">
+
+                                Budget Amount
+
+                            </small>
+
+                            <h3 class="fw-bold text-primary">
+
+                                {{ budget.amount|floatformat:2|intcomma }}
+
+                            </h3>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <small class="text-muted d-block">
+
+                                Amount Spent
+
+                            </small>
+
+                            <h3 class="fw-bold text-danger">
+
+                                {{ budget.spent|floatformat:2|intcomma }}
+
+                            </h3>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <small class="text-muted d-block">
+
+                                Remaining
+
+                            </small>
+
+                            <h3 class="fw-bold text-success">
+
+                                {{ budget.remaining|floatformat:2|intcomma }}
+
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ========================================= -->
+                    <!-- BUDGET PROGRESS (linter‑safe) -->
+                    <!-- ========================================= -->
+
+                    <hr class="my-4">
+
+                    <div class="mb-4">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+
+                            <span class="fw-semibold">
+
+                                Budget Usage
+
+                            </span>
+
+                            <span class="fw-bold">
+
+                                {{ budget.percentage }}%
+
+                            </span>
+
+                        </div>
+
+                        <!-- 
+                            The width is stored in data-width – the CSS linter 
+                            won't complain, and JavaScript sets the actual width.
+                        -->
+                        <div class="progress rounded-pill" style="height:12px;">
+
+                            <div
+                                class="progress-bar
+                                {% if budget.percentage < 70 %}
+                                    bg-success
+                                {% elif budget.percentage < 100 %}
+                                    bg-warning
+                                {% else %}
+                                    bg-danger
+                                {% endif %}"
+
+                                role="progressbar"
+
+                                aria-valuenow="{{ budget.percentage }}"
+
+                                aria-valuemin="0"
+
+                                aria-valuemax="100"
+
+                                data-width="{{ budget.percentage }}">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ========================================= -->
+                    <!-- STATUS -->
+                    <!-- ========================================= -->
+
+                    <div class="mb-4">
+
+                        {% if budget.percentage < 70 %}
+
+                            <div class="alert alert-success border-0">
+
+                                <i class="fas fa-circle-check me-2"></i>
+
+                                <strong>On Track</strong>
+
+                                <div class="small mt-1">
+
+                                    Your spending is comfortably within your budget.
+
+                                </div>
+
+                            </div>
+
+                        {% elif budget.percentage < 100 %}
+
+                            <div class="alert alert-warning border-0">
+
+                                <i class="fas fa-triangle-exclamation me-2"></i>
+
+                                <strong>Near Budget Limit</strong>
+
+                                <div class="small mt-1">
+
+                                    You're getting close to your monthly spending limit.
+
+                                </div>
+
+                            </div>
+
+                        {% else %}
+
+                            <div class="alert alert-danger border-0">
+
+                                <i class="fas fa-circle-xmark me-2"></i>
+
+                                <strong>Budget Exceeded</strong>
+
+                                <div class="small mt-1">
+
+                                    Your expenses have exceeded this month's budget.
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ========================================= -->
+        <!-- QUICK SUMMARY -->
+        <!-- ========================================= -->
+
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="fas fa-chart-pie text-primary me-2"></i>
+
+                        Quick Summary
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-4">
+
+                        <small class="text-muted">
+
+                            Category
+
+                        </small>
+
+                        <h5 class="fw-bold">
+
+                            {{ budget.get_category_display }}
+
+                        </h5>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <small class="text-muted">
+
+                            Budget Period
+
+                        </small>
+
+                        <h5 class="fw-bold">
+
+                            {{ budget.month_name }} {{ budget.year }}
+
+                        </h5>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <small class="text-muted">
+
+                            Currency
+
+                        </small>
+
+                        <h5 class="fw-bold">
+
+                            {{ budget.currency }}
+
+                        </h5>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <small class="text-muted">
+
+                            Remaining Budget
+
+                        </small>
+
+                        <h4 class="fw-bold text-success">
+
+                            {{ budget.remaining|floatformat:2 }}
+
+                        </h4>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-grid gap-2">
+
+                        <a href="{% url 'budget_edit' budget.pk %}"
+                           class="btn btn-warning">
+
+                            <i class="fas fa-pen me-2"></i>
+
+                            Edit Budget
+
+                        </a>
+
+                        <a href="{% url 'budget_delete' budget.pk %}"
+                           class="btn btn-danger">
+
+                            <i class="fas fa-trash me-2"></i>
+
+                            Delete Budget
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ========================================= -->
+            <!-- OPTIONAL NOTES -->
+            <!-- ========================================= -->
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="fas fa-circle-info text-primary me-2"></i>
+
+                        Budget Information
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-0">
+
+                        A budget helps you control your spending by comparing
+                        your planned amount with your actual expenses.
+                        Keep monitoring this page regularly to stay within
+                        your financial goals.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // =====================================
+    // Bootstrap Tooltips
+    // =====================================
+
+    const tooltipTriggerList = document.querySelectorAll(
+        '[data-bs-toggle="tooltip"]'
+    );
+
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+
+        new bootstrap.Tooltip(tooltipTriggerEl);
+
+    });
+
+    // =====================================
+    // Set progress bar width from data attribute
+    // (no inline style with Django tags – linter‑free!)
+    // =====================================
+
+    const progressBar = document.querySelector(".progress-bar");
+
+    if (progressBar) {
+
+        const width = progressBar.getAttribute("data-width");
+
+        if (width !== null) {
+
+            // Animate from 0 to the actual width
+            progressBar.style.width = "0%";
+
+            setTimeout(function () {
+
+                progressBar.style.transition = "width .8s ease";
+
+                // Cap at 100% to avoid overflow
+                const finalWidth = Math.min(parseFloat(width), 100);
+                progressBar.style.width = finalWidth + "%";
+
+            }, 150);
+
+        }
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

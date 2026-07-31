@@ -1,0 +1,1028 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Dashboard | SpendWise{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- ===================================== -->
+    <!-- Dashboard Header -->
+    <!-- ===================================== -->
+
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+
+                <i class="fas fa-chart-line text-primary me-2"></i>
+
+                Financial Dashboard
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Welcome back,
+                <strong>{{ user.first_name|default:user.username }}</strong>.
+                Here's an overview of your finances.
+
+            </p>
+
+        </div>
+
+        <div class="mt-3 mt-lg-0 d-flex flex-wrap gap-2">
+
+            <a href="{% url 'expense_add' %}"
+               class="btn btn-danger">
+
+                <i class="fas fa-minus-circle me-2"></i>
+
+                Add Expense
+
+            </a>
+
+            <a href="{% url 'income_add' %}"
+               class="btn btn-success">
+
+                <i class="fas fa-plus-circle me-2"></i>
+
+                Add Income
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Statistics Cards -->
+    <!-- ===================================== -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- Income -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Income Records
+
+                            </small>
+
+                            <h2 class="fw-bold text-success mt-2">
+
+                                {{ income_count }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
+
+                            <i class="fas fa-money-bill-trend-up fa-2x text-success"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Expense -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Expense Records
+
+                            </small>
+
+                            <h2 class="fw-bold text-danger mt-2">
+
+                                {{ expense_count }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="bg-danger bg-opacity-10 rounded-circle p-3">
+
+                            <i class="fas fa-wallet fa-2x text-danger"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Transactions -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Total Transactions
+
+                            </small>
+
+                            <h2 class="fw-bold text-primary mt-2">
+
+                                {{ total_transactions }}
+
+                            </h2>
+
+                        </div>
+
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+
+                            <i class="fas fa-receipt fa-2x text-primary"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Highest Income -->
+
+        <div class="col-12 col-sm-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+
+                                Highest Income
+
+                            </small>
+
+                            <h5 class="fw-bold text-success mt-2">
+
+                                {{ highest_income|floatformat:2|intcomma }}
+
+                            </h5>
+
+                        </div>
+
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+
+                            <i class="fas fa-trophy fa-2x text-warning"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+          <!-- ===================================== -->
+    <!-- Financial Summary -->
+    <!-- ===================================== -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- Income Totals -->
+
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-success text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-arrow-trend-up me-2"></i>
+
+                        Income by Currency
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if income_totals %}
+
+                        {% for item in income_totals %}
+
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+
+                                <span>
+
+                                    {{ item.currency }}
+
+                                </span>
+
+                                <span class="fw-bold text-success">
+
+                                    {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="text-center text-muted py-4">
+
+                            <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+
+                            <p class="mb-0">
+
+                                No income recorded.
+
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Expense Totals -->
+
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-danger text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-arrow-trend-down me-2"></i>
+
+                        Expenses by Currency
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if expense_totals %}
+
+                        {% for item in expense_totals %}
+
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+
+                                <span>
+
+                                    {{ item.currency }}
+
+                                </span>
+
+                                <span class="fw-bold text-danger">
+
+                                    {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="text-center text-muted py-4">
+
+                            <i class="fas fa-wallet fa-3x mb-3"></i>
+
+                            <p class="mb-0">
+
+                                No expenses recorded.
+
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Balance -->
+
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-scale-balanced me-2"></i>
+
+                        Balance by Currency
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if balance_totals %}
+
+                        {% for item in balance_totals %}
+
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+
+                                <span>
+
+                                    {{ item.currency }}
+
+                                </span>
+
+                                <span class="fw-bold {% if item.balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+
+                                    {{ item.symbol }}{{ item.balance|floatformat:2|intcomma }}
+
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="text-center text-muted py-4">
+
+                            <i class="fas fa-scale-balanced fa-3x mb-3"></i>
+
+                            <p class="mb-0">
+
+                                No balances available.
+
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Today & Monthly Summary -->
+    <!-- ===================================== -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- Today's Summary -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-calendar-day text-primary me-2"></i>
+
+                        Today's Summary
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <h6 class="text-success mb-3">
+
+                        Income
+
+                    </h6>
+
+                    {% if today_income_summary %}
+
+                        {% for item in today_income_summary %}
+
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>{{ item.currency }}</span>
+
+                                <strong class="text-success">
+
+                                    {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                </strong>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="text-muted">
+
+                            No income today.
+
+                        </p>
+
+                    {% endif %}
+
+                    <hr>
+
+                    <h6 class="text-danger mb-3">
+
+                        Expenses
+
+                    </h6>
+
+                    {% if today_expense_summary %}
+
+                        {% for item in today_expense_summary %}
+
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>{{ item.currency }}</span>
+
+                                <strong class="text-danger">
+
+                                    {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                </strong>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="text-muted">
+
+                            No expenses today.
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Monthly Summary -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+
+                        This Month
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <h6 class="text-success mb-3">
+
+                        Income
+
+                    </h6>
+
+                    {% if month_income_summary %}
+
+                        {% for item in month_income_summary %}
+
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>{{ item.currency }}</span>
+
+                                <strong class="text-success">
+
+                                    {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                </strong>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="text-muted">
+
+                            No income this month.
+
+                        </p>
+
+                    {% endif %}
+
+                    <hr>
+
+                    <h6 class="text-danger mb-3">
+
+                        Expenses
+
+                    </h6>
+
+                    {% if month_expense_summary %}
+
+                        {% for item in month_expense_summary %}
+
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>{{ item.currency }}</span>
+
+                                <strong class="text-danger">
+
+                                    {{ item.symbol }}{{ item.total|floatformat:2|intcomma }}
+
+                                </strong>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p class="text-muted">
+
+                            No expenses this month.
+
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+          <!-- ===================================== -->
+    <!-- Charts -->
+    <!-- ===================================== -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- Expense Category Chart -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-chart-pie text-danger me-2"></i>
+
+                        Expense Categories
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div style="height:320px;">
+
+                        <canvas id="expenseCategoryChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Income Source Chart -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-chart-doughnut text-success me-2"></i>
+
+                        Income Sources
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div style="height:320px;">
+
+                        <canvas id="incomeSourceChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================================== -->
+    <!-- Recent Activity -->
+    <!-- ===================================== -->
+
+    <div class="row g-4">
+
+        <!-- Recent Income -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-success text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-arrow-trend-up me-2"></i>
+
+                        Recent Income
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if recent_incomes %}
+
+                        <div class="list-group list-group-flush">
+
+                            {% for income in recent_incomes %}
+
+                                <div class="list-group-item px-0">
+
+                                    <div class="d-flex justify-content-between">
+
+                                        <div>
+
+                                            <strong>
+
+                                                {{ income.get_source_display }}
+
+                                            </strong>
+
+                                            <br>
+
+                                            <small class="text-muted">
+
+                                                {{ income.description }}
+
+                                            </small>
+
+                                        </div>
+
+                                        <div class="text-end">
+
+                                            <div class="fw-bold text-success">
+
+                                                {{ income.currency }}
+
+                                                {{ income.amount|floatformat:2|intcomma }}
+
+                                            </div>
+
+                                            <small class="text-muted">
+
+                                                {{ income.date|date:"M d, Y" }}
+
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="text-center py-5 text-muted">
+
+                            <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+
+                            <p>No income recorded.</p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Recent Expenses -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-danger text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="fas fa-wallet me-2"></i>
+
+                        Recent Expenses
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if recent_expenses %}
+
+                        <div class="list-group list-group-flush">
+
+                            {% for expense in recent_expenses %}
+
+                                <div class="list-group-item px-0">
+
+                                    <div class="d-flex justify-content-between">
+
+                                        <div>
+
+                                            <strong>
+
+                                                {{ expense.get_category_display }}
+
+                                            </strong>
+
+                                            <br>
+
+                                            <small class="text-muted">
+
+                                                {{ expense.description }}
+
+                                            </small>
+
+                                        </div>
+
+                                        <div class="text-end">
+
+                                            <div class="fw-bold text-danger">
+
+                                                {{ expense.currency }}
+
+                                                {{ expense.amount|floatformat:2|intcomma }}
+
+                                            </div>
+
+                                            <small class="text-muted">
+
+                                                {{ expense.date|date:"M d, Y" }}
+
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="text-center py-5 text-muted">
+
+                            <i class="fas fa-wallet fa-3x mb-3"></i>
+
+                            <p>No expenses recorded.</p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{{ expense_category_data|json_script:"expense-category-data" }}
+{{ income_source_data|json_script:"income-source-data" }}
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    // ==========================
+    // Expense Chart
+    // ==========================
+
+    const expenseData = JSON.parse(
+        document.getElementById("expense-category-data").textContent
+    );
+
+    if(Object.keys(expenseData).length){
+
+        new Chart(
+
+            document.getElementById("expenseCategoryChart"),
+
+            {
+
+                type:"doughnut",
+
+                data:{
+
+                    labels:Object.keys(expenseData),
+
+                    datasets:[{
+
+                        data:Object.values(expenseData),
+
+                        backgroundColor:[
+                            "#ef4444",
+                            "#f59e0b",
+                            "#10b981",
+                            "#3b82f6",
+                            "#8b5cf6",
+                            "#06b6d4",
+                            "#ec4899",
+                            "#84cc16"
+                        ]
+
+                    }]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    plugins:{
+                        legend:{
+                            position:"bottom"
+                        }
+                    }
+
+                }
+
+            }
+
+        );
+
+    }
+
+    // ==========================
+    // Income Chart
+    // ==========================
+
+    const incomeData = JSON.parse(
+        document.getElementById("income-source-data").textContent
+    );
+
+    if(Object.keys(incomeData).length){
+
+        new Chart(
+
+            document.getElementById("incomeSourceChart"),
+
+            {
+
+                type:"pie",
+
+                data:{
+
+                    labels:Object.keys(incomeData),
+
+                    datasets:[{
+
+                        data:Object.values(incomeData),
+
+                        backgroundColor:[
+                            "#22c55e",
+                            "#3b82f6",
+                            "#f59e0b",
+                            "#8b5cf6",
+                            "#06b6d4",
+                            "#ef4444",
+                            "#84cc16"
+                        ]
+
+                    }]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    plugins:{
+                        legend:{
+                            position:"bottom"
+                        }
+                    }
+
+                }
+
+            }
+
+        );
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,812 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=edge">
+
+    <title>
+        {% block title %}SpendWise{% endblock %}
+    </title>
+
+    <meta name="description"
+          content="Track your income, expenses and financial growth with SpendWise.">
+
+    <meta name="theme-color"
+          content="#2563eb">
+
+    <!-- ================= FAVICON (removed) ================= -->
+
+    <!-- ================= GOOGLE FONT ================= -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- ================= BOOTSTRAP ================= -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- ================= FONT AWESOME ================= -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ================= CUSTOM CSS ================= -->
+
+    <link rel="stylesheet"
+          href="{% static 'css/custom.css' %}">
+
+    {% block extra_css %}{% endblock %}
+
+    <!-- ================= CHART.JS ================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<!-- ========================================================= -->
+<!-- NAVIGATION -->
+<!-- ========================================================= -->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+
+    <div class="container">
+
+        <!-- Logo -->
+
+        <a class="navbar-brand fw-bold d-flex align-items-center"
+           href="{% url 'home' %}">
+
+            <i class="fas fa-wallet text-primary me-2"></i>
+
+            <span>SpendWise</span>
+
+        </a>
+
+        <!-- Mobile Toggle -->
+
+        <button class="navbar-toggler border-0 shadow-none"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <!-- Navbar Links -->
+
+        <div class="collapse navbar-collapse"
+             id="navbarNav">
+
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+
+                {% if user.is_authenticated %}
+
+                <!-- Home -->
+
+                <li class="nav-item">
+
+                    <a class="nav-link px-lg-3 {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                       href="{% url 'home' %}">
+
+                        <i class="fas fa-house me-1"></i>
+
+                        Home
+
+                    </a>
+
+                </li>
+
+                <!-- Dashboard -->
+
+                <li class="nav-item">
+
+                    <a class="nav-link px-lg-3 {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                       href="{% url 'dashboard' %}">
+
+                        <i class="fas fa-chart-line me-1"></i>
+
+                        Dashboard
+
+                    </a>
+
+                </li>
+
+                <!-- Expenses -->
+
+                <li class="nav-item">
+
+                    <a class="nav-link px-lg-3 {% if request.resolver_match.url_name == 'expense_list' %}active{% endif %}"
+                       href="{% url 'expense_list' %}">
+
+                        <i class="fas fa-receipt me-1"></i>
+
+                        Expenses
+
+                    </a>
+
+                </li>
+
+                </li>
+
+                <!-- Income -->
+
+                <li class="nav-item">
+
+                    <a class="nav-link px-lg-3 {% if request.resolver_match.url_name == 'income_list' %}active{% endif %}"
+                       href="{% url 'income_list' %}">
+
+                        <i class="fas fa-money-bill-trend-up me-1"></i>
+
+                        Income
+
+                    </a>
+
+                </li>
+                
+                </li>
+
+                <!-- Budgets -->
+
+                <li class="nav-item">
+
+                    <a class="nav-link px-lg-3 {% if request.resolver_match.url_name == 'budget_list' %}active{% endif %}"
+                       href="{% url 'budget_list' %}">
+
+                        <i class="fas fa-piggy-bank me-1"></i>
+
+                        Budgets
+
+                    </a>
+
+                </li>
+
+                <!-- ========================================================= -->
+                <!-- NOTIFICATIONS DROPDOWN -->
+                <!-- ========================================================= -->
+
+                <li class="nav-item dropdown">
+
+                    <a class="nav-link position-relative"
+                       href="#"
+                       id="notificationDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+
+                        <i class="fas fa-bell fs-5"></i>
+
+                        {% if unread_notifications_count > 0 %}
+
+                        <span id="notification-count"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+
+                            {{ unread_notifications_count }}
+
+                        </span>
+
+                        {% endif %}
+
+                    </a>
+
+                    <ul id="notification-menu"
+                        class="dropdown-menu dropdown-menu-end shadow border-0"
+                        style="min-width:380px;">
+
+                        <!-- Header -->
+
+                        <li class="dropdown-header d-flex justify-content-between align-items-center">
+
+                            <strong>
+
+                                Notifications
+
+                            </strong>
+
+                            {% if unread_notifications_count > 0 %}
+
+                            <span class="badge bg-danger">
+
+                                {{ unread_notifications_count }}
+
+                            </span>
+
+                            {% endif %}
+
+                        </li>
+
+                        <li>
+
+                            <hr class="dropdown-divider">
+
+                        </li>
+
+                        <!-- Notifications -->
+
+                        {% for notification in latest_notifications %}
+
+                        <li>
+
+                            <a href="{% url 'notification_read' notification.pk %}"
+                               class="dropdown-item py-3">
+
+                                <div class="d-flex">
+
+                                    <div class="me-3">
+
+                                        {% if notification.notification_type == "success" %}
+
+                                            <i class="fas fa-circle-check text-success"></i>
+
+                                        {% elif notification.notification_type == "warning" %}
+
+                                            <i class="fas fa-triangle-exclamation text-warning"></i>
+
+                                        {% elif notification.notification_type == "danger" %}
+
+                                            <i class="fas fa-circle-xmark text-danger"></i>
+
+                                        {% else %}
+
+                                            <i class="fas fa-circle-info text-primary"></i>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="flex-grow-1">
+
+                                        <div class="fw-semibold">
+
+                                            {{ notification.title }}
+
+                                        </div>
+
+                                        <small class="text-muted d-block">
+
+                                            {{ notification.message|truncatechars:60 }}
+
+                                        </small>
+
+                                        <small class="text-secondary">
+
+                                            {{ notification.created_at|naturaltime }}
+
+                                        </small>
+
+                                    </div>
+
+                                    {% if not notification.is_read %}
+
+                                    <span class="badge bg-primary ms-2">
+
+                                        New
+
+                                    </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </a>
+
+                        </li>
+
+                        {% empty %}
+
+                        <li>
+
+                            <div class="dropdown-item text-center py-4">
+
+                                <i class="fas fa-bell-slash fa-2x text-muted mb-2"></i>
+
+                                <div class="text-muted">
+
+                                    No notifications yet.
+
+                                </div>
+
+                            </div>
+
+                        </li>
+
+                        {% endfor %}
+
+                        <li>
+
+                            <hr class="dropdown-divider">
+
+                        </li>
+
+                        <li>
+
+                            <a href="{% url 'notification_list' %}"
+                               class="dropdown-item text-center fw-bold">
+
+                                <i class="fas fa-list me-2"></i>
+
+                                View All Notifications
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </li>
+
+                <!-- ========================================================= -->
+                <!-- USER DROPDOWN (Dark Mode toggle removed)                 -->
+                <!-- ========================================================= -->
+
+                <li class="nav-item dropdown">
+
+                    <a class="nav-link dropdown-toggle d-flex align-items-center px-lg-3"
+                       href="#"
+                       id="userDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+
+                        <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-2"
+                             style="width:34px;height:34px;">
+
+                            {{ user.username|first|upper }}
+
+                        </div>
+
+                        <span class="d-none d-lg-inline">
+
+                            {{ user.username }}
+
+                        </span>
+
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+
+                        <li>
+
+                            <h6 class="dropdown-header">
+
+                                Signed in as
+
+                                <strong>{{ user.username }}</strong>
+
+                            </h6>
+
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{% url 'dashboard' %}">
+
+                                <i class="fas fa-chart-line me-2 text-primary"></i>
+
+                                Dashboard
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{% url 'expense_list' %}">
+
+                                <i class="fas fa-receipt me-2 text-secondary"></i>
+
+                                Expenses
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{% url 'expense_add' %}">
+
+                                <i class="fas fa-plus-circle me-2 text-success"></i>
+
+                                Add Expense
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{% url 'income_list' %}">
+
+                                <i class="fas fa-money-bill-trend-up me-2 text-success"></i>
+
+                                Income
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{% url 'income_add' %}">
+
+                                <i class="fas fa-circle-dollar-to-slot me-2 text-primary"></i>
+
+                                Add Income
+
+                            </a>
+
+                        </li>
+
+                        <!-- ========================================== -->
+                        <!-- MY PROFILE – added without changing logic  -->
+                        <!-- ========================================== -->
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{% url 'profile' %}">
+
+                                <i class="fas fa-user me-2 text-primary"></i>
+
+                                My Profile
+
+                            </a>
+
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item text-danger"
+                               href="{% url 'logout' %}">
+
+                                <i class="fas fa-right-from-bracket me-2"></i>
+
+                                Logout
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </li>
+
+                <!-- ========================================================= -->
+                <!-- MOBILE-ONLY LINKS (hidden on desktop)                    -->
+                <!-- ========================================================= -->
+
+                <li class="nav-item d-lg-none">
+                    <a class="nav-link" href="{% url 'profile' %}">
+                        <i class="fas fa-user me-2"></i>
+                        My Profile
+                    </a>
+                </li>
+
+                <li class="nav-item d-lg-none">
+                    <a class="nav-link text-danger" href="{% url 'logout' %}">
+                        <i class="fas fa-right-from-bracket me-2"></i>
+                        Logout
+                    </a>
+                </li>
+
+                {% else %}
+
+                <li class="nav-item">
+
+                    <a class="nav-link px-lg-3 {% if request.resolver_match.url_name == 'login' %}active{% endif %}"
+                       href="{% url 'login' %}">
+
+                        <i class="fas fa-right-to-bracket me-1"></i>
+
+                        Login
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="btn btn-primary ms-lg-2 mt-2 mt-lg-0 px-4"
+                       href="{% url 'register' %}">
+
+                        <i class="fas fa-user-plus me-2"></i>
+
+                        Register
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<!-- ========================================================= -->
+<!-- MAIN CONTENT -->
+<!-- ========================================================= -->
+
+<main class="flex-grow-1 py-4">
+
+    <div class="container">
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0"
+                     role="alert">
+
+                    <i class="fas fa-circle-info me-2"></i>
+
+                    {{ message }}
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </button>
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+        {% block content %}
+
+        {% endblock %}
+
+    </div>
+
+</main>
+
+<!-- ========================================================= -->
+<!-- FOOTER -->
+<!-- ========================================================= -->
+
+<footer class="bg-dark text-light py-4 mt-auto">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-6 text-center text-md-start">
+
+                <h6 class="fw-bold mb-1">
+
+                    <i class="fas fa-wallet text-primary me-2"></i>
+
+                    SpendWise
+
+                </h6>
+
+                <small class="text-secondary">
+
+                    Smart finance management made simple.
+
+                </small>
+
+            </div>
+
+            <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+
+                <small class="text-secondary">
+
+                    © 2026 SpendWise. Built with Django & Bootstrap.
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+<!-- ========================================================= -->
+<!-- SCROLL TO TOP BUTTON -->
+<!-- ========================================================= -->
+
+<button id="scrollTopBtn"
+        class="btn btn-primary rounded-circle shadow"
+        title="Back to Top"
+        style="
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+        ">
+
+    <i class="fas fa-arrow-up"></i>
+
+</button>
+
+<!-- ========================================================= -->
+<!-- BOOTSTRAP JS -->
+<!-- ========================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ========================================================= -->
+<!-- MAIN JAVASCRIPT (removed)                                 -->
+<!-- ========================================================= -->
+
+<!-- ========================================================= -->
+<!-- BASE JAVASCRIPT (navbar, scroll, alerts)                  -->
+<!-- ========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ==========================================
+    // Close mobile navbar after clicking a link
+    // ==========================================
+
+    const navbar = document.querySelector(".navbar-collapse");
+
+    document.querySelectorAll(".navbar-nav .nav-link").forEach(link => {
+
+        link.addEventListener("click", function () {
+
+            if (navbar.classList.contains("show")) {
+
+                bootstrap.Collapse.getOrCreateInstance(navbar).hide();
+
+            }
+
+        });
+
+    });
+
+    // ==========================================
+    // Scroll To Top Button
+    // ==========================================
+
+    const scrollBtn = document.getElementById("scrollTopBtn");
+
+    window.addEventListener("scroll", function () {
+
+        if (window.scrollY > 300) {
+
+            scrollBtn.style.display = "flex";
+
+        } else {
+
+            scrollBtn.style.display = "none";
+
+        }
+
+    });
+
+    scrollBtn.addEventListener("click", function () {
+
+        window.scrollTo({
+
+            top: 0,
+
+            behavior: "smooth"
+
+        });
+
+    });
+
+    // ==========================================
+    // Auto-dismiss alerts
+    // ==========================================
+
+    document.querySelectorAll(".alert").forEach(function(alert){
+
+        setTimeout(function(){
+
+            bootstrap.Alert.getOrCreateInstance(alert).close();
+
+        }, 5000);
+
+    });
+
+});
+
+</script>
+
+<!-- ========================================================= -->
+<!-- PAGE‑SPECIFIC JAVASCRIPT (can be overridden)             -->
+<!-- ========================================================= -->
+
+{% block extra_js %}{% endblock %}
+
+<!-- ========================================================= -->
+<!-- NOTIFICATION REFRESH SCRIPT                               -->
+<!-- ========================================================= -->
+
+<script>
+
+function refreshNotifications() {
+
+    fetch("{% url 'notification_data' %}")
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        const badge = document.getElementById("notification-count");
+
+        if (badge) {
+
+            if (data.count > 0) {
+
+                badge.innerHTML = data.count;
+
+                badge.style.display = "inline";
+
+            } else {
+
+                badge.style.display = "none";
+
+            }
+
+        }
+
+    })
+
+    .catch(error => console.log(error));
+
+}
+
+// Refresh every 30 seconds
+setInterval(refreshNotifications, 30000);
+
+// Refresh immediately when page loads
+refreshNotifications();
+
+</script>
+
+</body>
+</html>

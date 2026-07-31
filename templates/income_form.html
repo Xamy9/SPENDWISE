@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} | SpendWise{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8 col-xl-7">
+
+            <!-- Back Button -->
+
+            <div class="mb-4">
+
+                <a href="{% url 'income_list' %}"
+                   class="btn btn-outline-secondary">
+
+                    <i class="fas fa-arrow-left me-2"></i>
+
+                    Back to Income
+
+                </a>
+
+            </div>
+
+            <!-- Card -->
+
+            <div class="card shadow-lg border-0">
+
+                <!-- Header -->
+
+                <div class="card-header bg-success text-white py-4">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="me-3">
+
+                            <i class="fas fa-money-bill-wave fa-2x"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3 class="fw-bold mb-1">
+
+                                {{ title }}
+
+                            </h3>
+
+                            <p class="mb-0 text-white-50">
+
+                                Record your income and keep track of every payment.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Body -->
+
+                <div class="card-body p-4">
+
+                    <form method="post"
+                          enctype="multipart/form-data"
+                          novalidate>
+
+                        {% csrf_token %}
+
+                        <!-- Income Source -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                <i class="fas fa-briefcase text-success me-2"></i>
+
+                                Income Source
+
+                            </label>
+
+                            {{ form.source }}
+
+                            {% if form.source.errors %}
+
+                                <div class="text-danger small mt-1">
+
+                                    {{ form.source.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Currency -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                <i class="fas fa-coins text-warning me-2"></i>
+
+                                Currency
+
+                            </label>
+
+                            {{ form.currency }}
+
+                            {% if form.currency.errors %}
+
+                                <div class="text-danger small mt-1">
+
+                                    {{ form.currency.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+                                                   <!-- Amount -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                <i class="fas fa-sack-dollar text-primary me-2"></i>
+
+                                Amount
+
+                            </label>
+
+                            {{ form.amount }}
+
+                            {% if form.amount.errors %}
+
+                                <div class="text-danger small mt-1">
+
+                                    {{ form.amount.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Description -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                <i class="fas fa-align-left text-info me-2"></i>
+
+                                Description
+
+                            </label>
+
+                            {{ form.description }}
+
+                            <div class="form-text">
+
+                                Add a short description about this income.
+
+                            </div>
+
+                            {% if form.description.errors %}
+
+                                <div class="text-danger small mt-1">
+
+                                    {{ form.description.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Receipt Upload -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                <i class="fas fa-paperclip text-secondary me-2"></i>
+
+                                Receipt / Proof of Payment
+
+                            </label>
+
+                            {{ form.receipt }}
+
+                            <div class="form-text">
+
+                                Upload a receipt, bank alert, invoice or proof of payment (optional).
+
+                            </div>
+
+                            {% if form.receipt.errors %}
+
+                                <div class="text-danger small mt-1">
+
+                                    {{ form.receipt.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                            <!-- Image Preview -->
+
+                            <div class="mt-3 text-center">
+
+                                <img id="receiptPreview"
+                                     src="#"
+                                     class="img-fluid rounded shadow d-none"
+                                     style="max-height:250px;"
+                                     alt="Receipt Preview">
+
+                            </div>
+
+                        </div>
+
+                        <!-- Date -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                <i class="fas fa-calendar-days text-danger me-2"></i>
+
+                                Date Received
+
+                            </label>
+
+                            {{ form.date }}
+
+                            {% if form.date.errors %}
+
+                                <div class="text-danger small mt-1">
+
+                                    {{ form.date.errors }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+                                                   {% if form.non_field_errors %}
+
+                            <div class="alert alert-danger">
+
+                                <i class="fas fa-circle-exclamation me-2"></i>
+
+                                {{ form.non_field_errors }}
+
+                            </div>
+
+                        {% endif %}
+
+                        <hr class="my-4">
+
+                        <!-- Buttons -->
+
+                        <div class="d-flex flex-column flex-md-row justify-content-end gap-3">
+
+                            <a href="{% url 'income_list' %}"
+                               class="btn btn-outline-secondary">
+
+                                <i class="fas fa-times me-2"></i>
+
+                                Cancel
+
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-success">
+
+                                <i class="fas fa-floppy-disk me-2"></i>
+
+                                Save Income
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <!-- Footer Note -->
+
+            <div class="text-center mt-4">
+
+                <small class="text-muted">
+
+                    <i class="fas fa-lock me-1"></i>
+
+                    Your income records are securely stored and only visible to you.
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const fileInput = document.getElementById("id_receipt");
+    const preview = document.getElementById("receiptPreview");
+
+    if (fileInput) {
+
+        fileInput.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) {
+
+                preview.classList.add("d-none");
+                preview.src = "#";
+                return;
+
+            }
+
+            if (!file.type.startsWith("image/")) {
+
+                preview.classList.add("d-none");
+                return;
+
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                preview.src = e.target.result;
+                preview.classList.remove("d-none");
+
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

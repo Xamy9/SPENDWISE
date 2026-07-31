@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ title }} | SpendWise
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8 col-xl-7">
+
+            <!-- Back Button -->
+
+            <div class="mb-4">
+
+                <a href="{% url 'budget_list' %}"
+                   class="btn btn-outline-secondary">
+
+                    <i class="fas fa-arrow-left me-2"></i>
+
+                    Back to Budgets
+
+                </a>
+
+            </div>
+
+            <!-- Card -->
+
+            <div class="card shadow-lg border-0">
+
+                <!-- Header -->
+
+                <div class="card-header bg-primary text-white py-4">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="me-3">
+
+                            <i class="fas fa-piggy-bank fa-2x"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3 class="fw-bold mb-1">
+
+                                {{ title }}
+
+                            </h3>
+
+                            <p class="mb-0 text-white-50">
+
+                                Set monthly spending limits for better financial control.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Body -->
+
+                <div class="card-body p-4">
+
+                    <form method="POST" novalidate>
+
+                        {% csrf_token %}
+                            <!-- ================= CATEGORY ================= -->
+
+<div class="mb-4">
+
+    <label class="form-label fw-semibold">
+
+        <i class="fas fa-tags text-primary me-2"></i>
+
+        Budget Category
+
+    </label>
+
+    {{ form.category }}
+
+    {% if form.category.errors %}
+
+        <div class="text-danger small mt-1">
+
+            {{ form.category.errors }}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<!-- ================= CURRENCY ================= -->
+
+<div class="mb-4">
+
+    <label class="form-label fw-semibold">
+
+        <i class="fas fa-money-bill-wave text-success me-2"></i>
+
+        Currency
+
+    </label>
+
+    {{ form.currency }}
+
+    {% if form.currency.errors %}
+
+        <div class="text-danger small mt-1">
+
+            {{ form.currency.errors }}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<!-- ================= AMOUNT ================= -->
+
+<div class="mb-4">
+
+    <label class="form-label fw-semibold">
+
+        <i class="fas fa-wallet text-warning me-2"></i>
+
+        Budget Amount
+
+    </label>
+
+    {{ form.amount }}
+
+    {% if form.amount.errors %}
+
+        <div class="text-danger small mt-1">
+
+            {{ form.amount.errors }}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<div class="row">
+
+    <!-- ================= MONTH ================= -->
+
+    <div class="col-md-6 mb-4">
+
+        <label class="form-label fw-semibold">
+
+            <i class="fas fa-calendar-alt text-info me-2"></i>
+
+            Budget Month
+
+        </label>
+
+        {{ form.month }}
+
+        {% if form.month.errors %}
+
+            <div class="text-danger small mt-1">
+
+                {{ form.month.errors }}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- ================= YEAR ================= -->
+
+    <div class="col-md-6 mb-4">
+
+        <label class="form-label fw-semibold">
+
+            <i class="fas fa-calendar text-danger me-2"></i>
+
+            Budget Year
+
+        </label>
+
+        {{ form.year }}
+
+        {% if form.year.errors %}
+
+            <div class="text-danger small mt-1">
+
+                {{ form.year.errors }}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- ================= NON FIELD ERRORS ================= -->
+
+{% if form.non_field_errors %}
+
+<div class="alert alert-danger">
+
+    <i class="fas fa-circle-exclamation me-2"></i>
+
+    {{ form.non_field_errors }}
+
+</div>
+
+{% endif %}
+
+<hr class="my-4">
+   <!-- ================= ACTION BUTTONS ================= -->
+
+<div class="d-flex flex-column flex-md-row justify-content-end gap-3">
+
+    <a href="{% url 'budget_list' %}"
+       class="btn btn-outline-secondary">
+
+        <i class="fas fa-times me-2"></i>
+
+        Cancel
+
+    </a>
+
+    <button type="submit"
+            class="btn btn-primary">
+
+        <i class="fas fa-floppy-disk me-2"></i>
+
+        {% if title == "Edit Budget" %}
+
+            Update Budget
+
+        {% else %}
+
+            Save Budget
+
+        {% endif %}
+
+    </button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- Footer Note -->
+
+<div class="text-center mt-4">
+
+    <small class="text-muted">
+
+        <i class="fas fa-shield-alt me-1"></i>
+
+        Setting a monthly budget helps you control spending and achieve your financial goals.
+
+    </small>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
