@@ -149,8 +149,6 @@
 
                 </li>
 
-                </li>
-
                 <!-- Income -->
 
                 <li class="nav-item">
@@ -164,8 +162,6 @@
 
                     </a>
 
-                </li>
-                
                 </li>
 
                 <!-- Budgets -->
@@ -184,36 +180,31 @@
                 </li>
 
                 <!-- ========================================================= -->
-                <!-- NOTIFICATIONS DROPDOWN -->
+                <!-- NOTIFICATIONS DROPDOWN (now a <button>)                  -->
                 <!-- ========================================================= -->
 
                 <li class="nav-item dropdown">
 
-                    <a class="nav-link position-relative"
-                       href="#"
-                       id="notificationDropdown"
-                       role="button"
-                       data-bs-toggle="dropdown"
-                       aria-expanded="false">
+                    <button
+                        id="notificationDropdown"
+                        class="btn nav-link dropdown-toggle position-relative border-0 bg-transparent"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
 
                         <i class="fas fa-bell fs-5"></i>
 
                         {% if unread_notifications_count > 0 %}
-
                         <span id="notification-count"
                               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-
                             {{ unread_notifications_count }}
-
                         </span>
-
                         {% endif %}
 
-                    </a>
+                    </button>
 
                     <ul id="notification-menu"
-                        class="dropdown-menu dropdown-menu-end shadow border-0"
-                        style="min-width:380px;">
+                        class="dropdown-menu dropdown-menu-end shadow border-0 notification-dropdown">
 
                         <!-- Header -->
 
@@ -688,17 +679,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ==========================================
     // Close mobile navbar after clicking a link
+    // (completely ignores dropdown toggles)
     // ==========================================
 
     const navbar = document.querySelector(".navbar-collapse");
 
-    document.querySelectorAll(".navbar-nav .nav-link").forEach(link => {
+    document.querySelectorAll(
+        '.navbar-nav .nav-link:not([data-bs-toggle="dropdown"])'
+    ).forEach(link => {
 
         link.addEventListener("click", function () {
 
             if (navbar.classList.contains("show")) {
 
-                bootstrap.Collapse.getOrCreateInstance(navbar).hide();
+                bootstrap.Collapse
+                    .getOrCreateInstance(navbar)
+                    .hide();
 
             }
 
@@ -805,6 +801,27 @@ setInterval(refreshNotifications, 30000);
 
 // Refresh immediately when page loads
 refreshNotifications();
+
+</script>
+
+<!-- ========================================================= -->
+<!-- DROPDOWN INITIALIZER (ensures notification bell works)   -->
+<!-- ========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const notificationButton =
+        document.getElementById("notificationDropdown");
+
+    if(notificationButton){
+
+        bootstrap.Dropdown.getOrCreateInstance(notificationButton);
+
+    }
+
+});
 
 </script>
 
