@@ -221,6 +221,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
 
+EMAIL_TIMEOUT = 30
+
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False") == "True"
 
@@ -269,4 +271,5 @@ if not DEBUG:
         "HTTP_X_FORWARDED_PROTO",
         "https",
     )
+
 
